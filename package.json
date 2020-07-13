@@ -1,0 +1,28 @@
+{
+  "name": "ztakio-db",
+  "version": "0.0.1",
+  "description": "A database storage adapter for ztakio",
+  "main": "src/index.js",
+  "scripts": {
+    "devTest": "nodemon test/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ztak-io/ztakio-db.git"
+  },
+  "author": "John \"Chiguireitor\" Villar",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ztak-io/ztakio-db/issues"
+  },
+  "homepage": "https://github.com/ztak-io/ztakio-db#readme",
+  "dependencies": {
+    "levelup": "^4.4.0"
+  },
+  "devDependencies": {
+    "chalk": "^4.1.0",
+    "memdown": "^5.1.0",
+    "nodemon": "^2.0.4"
+  }
+}
