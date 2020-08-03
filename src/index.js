@@ -49,11 +49,19 @@ const store = (connection) => {
   let transaction = null
 
   const get = async (key) => {
+    if (!key) {
+      return null
+    }
+
     if (transaction !== null && key in transaction) {
       return transaction[key]
     } else {
-      let value = await db.get(key)
-      return wet(JSON.parse(value))
+      try {
+        let value = await db.get(key)
+        return wet(JSON.parse(value))
+      } catch (e) {
+        return null
+      }
     }
   }
 
@@ -84,8 +92,24 @@ const store = (connection) => {
     transaction = null
   }
 
+  const iteratorPromisifier = (iter) => new Promise((resolve, reject) => {
+    iter.on('data', (pair) => {
+      resolve(pair)
+    })
+  })
+
+  const iterator = async function* (options) {
+    let iter = iteratorPromisifier(options)
+    while (pair = (await iter)) {
+      yield pair
+    }
+  }
+
   return {
-    get, put, start, commit, rollback
+    get, put, start, commit, rollback, iterator, _raw: () => {
+      console.log('WARNING: Hope you know what you\'re doing, _raw shouldn\'t be used if you aren\'t developing ztak-db ')
+      return db
+    }
   }
 }
 
