@@ -105,9 +105,13 @@ const store = (connection) => {
     }
   }
 
+  let _warnings = {}
   return {
     get, put, start, commit, rollback, iterator, _raw: () => {
-      console.log('WARNING: Hope you know what you\'re doing, _raw shouldn\'t be used if you aren\'t developing ztak-db ')
+      if (!('_raw' in _warnings)) {
+        _warnings._raw = true
+        console.log('*WARNING*: Hope you know what you\'re doing, _raw shouldn\'t be used if you aren\'t developing ztak-db')
+      }
       return db
     }
   }
