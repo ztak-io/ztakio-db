@@ -1,5 +1,7 @@
 const levelup = require('levelup')
 
+const _DELETION_MARKER_ = {}
+
 const dry = (value) => {
   if (Buffer.isBuffer(value)) {
     return { _t: 'buffer', _v: value.toString('base64') }
@@ -73,6 +75,14 @@ const store = (connection) => {
     }
   }
 
+  const del = async (key) => {
+    if (transaction !== null) {
+      transaction[key] = _DELETION_MARKER_
+    } else {
+      await db.del(key)
+    }
+  }
+
   const start = async () => {
     transaction = {}
   }
@@ -83,7 +93,11 @@ const store = (connection) => {
       transaction = null
 
       for (x in job) {
-        await put(x, job[x])
+        if (job[x] === _DELETION_MARKER_) {
+          await del(x)
+        } else {
+          await put(x, job[x])
+        }
       }
     }
   }
@@ -107,7 +121,7 @@ const store = (connection) => {
 
   let _warnings = {}
   return {
-    get, put, start, commit, rollback, iterator, _raw: () => {
+    get, put, del, start, commit, rollback, iterator, _raw: () => {
       if (!('_raw' in _warnings)) {
         _warnings._raw = true
         console.log('*WARNING*: Hope you know what you\'re doing, _raw shouldn\'t be used if you aren\'t developing ztak-db')
