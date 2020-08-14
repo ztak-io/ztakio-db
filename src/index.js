@@ -87,7 +87,11 @@ const store = (connection) => {
     transaction = {}
   }
 
-  const commit = async () => {
+  const commit = async (inject) => {
+    if (inject && transaction === null) {
+      transaction = inject
+    }
+
     if (transaction !== null) {
       job = transaction
       transaction = null
@@ -102,8 +106,12 @@ const store = (connection) => {
     }
   }
 
-  const rollback = async () => {
+  const rollback = async (returnState) => {
+    let temp = transaction
     transaction = null
+    if (returnState) {
+      return temp
+    }
   }
 
   const iteratorPromisifier = (iter) => new Promise((resolve, reject) => {
