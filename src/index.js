@@ -8,8 +8,10 @@ const dry = (value) => {
     return { _t: 'buffer', _v: value.toString('base64') }
   } else if (typeof(value) === 'bigint') {
     return { _t: 'bigint', _v: '' + value }
-  } else if (value instanceof JSBI) {
-    return { _t: 'jsbi', _v: value.toString() }
+  } else if (Array.isArray(value) && 'sign' in value) {
+    // Why this and not value instanceof JSBI? due to how node_modules are
+    // loaded, an inner module's JSBI isn't the same as our JSBI
+    return { _t: 'jsbi', _v: value.toString(10) }
   } else if (Array.isArray(value)) {
     return value.map(dry)
   } else if (typeof(value) === 'object') {
