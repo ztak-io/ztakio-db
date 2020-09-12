@@ -1,4 +1,5 @@
 const levelup = require('levelup')
+const JSBI = require('jsbi')
 
 const _DELETION_MARKER_ = {}
 
@@ -7,6 +8,8 @@ const dry = (value) => {
     return { _t: 'buffer', _v: value.toString('base64') }
   } else if (typeof(value) === 'bigint') {
     return { _t: 'bigint', _v: '' + value }
+  } else if (value instanceof JSBI) {
+    return { _t: 'jsbi', _v: value.toString() }
   } else if (Array.isArray(value)) {
     return value.map(dry)
   } else if (typeof(value) === 'object') {
@@ -29,6 +32,8 @@ const wet = (value) => {
         return Buffer.from(value._v, 'base64')
       } else if (value._t === 'bigint') {
         return BigInt(value._v)
+      } else if (value._t === 'jsbi') {
+        return JSBI.BigInt(value._v)
       } else if (value._t === 'object') {
         return Object.fromEntries(
           Object.entries(value._v).map(
