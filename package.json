@@ -1,6 +1,6 @@
 {
   "name": "ztakio-db",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "A database storage adapter for ztakio",
   "main": "src/index.js",
   "scripts": {

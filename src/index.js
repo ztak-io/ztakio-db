@@ -14,7 +14,7 @@ const dry = (value) => {
     return { _t: 'jsbi', _v: value.toString(10) }
   } else if (Array.isArray(value)) {
     return value.map(dry)
-  } else if (typeof(value) === 'object') {
+  } else if (typeof(value) === 'object' && value !== null) {
     return {_t: 'object', _v: Object.fromEntries(
       Object.entries(value).map(
         ([k,v]) => ([k, dry(v)])
