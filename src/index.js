@@ -121,17 +121,31 @@ const store = (connection) => {
     }
   }
 
-  const iteratorPromisifier = (iter) => new Promise((resolve, reject) => {
-    iter.on('data', (pair) => {
-      resolve(pair)
-    })
-  })
+  /*const iteratorPromisifier = (iter) => () => new Promise((resolve, reject) => {
 
-  const iterator = async function* (options) {
-    let iter = iteratorPromisifier(options)
-    while (pair = (await iter)) {
+  })*/
+
+  const iterator = (options) => {
+    let iter = db.iterator(options)
+    const next = () => new Promise((resolve, reject) => {
+      iter.next((err, key, value) => {
+        if (err) {
+          reject(err)
+        } else {
+          if (!key && !value) {
+            resolve({key, value, done: true})
+          } else {
+            resolve({value: {key: key.toString('utf8'), value: wet(JSON.parse(value))}, done: false})
+          }
+        }
+      })
+    })
+
+    return { next }
+    /*let iter = iteratorPromisifier(db.iterator(options))
+    while (pair = (await iter())) {
       yield pair
-    }
+    }*/
   }
 
   let _warnings = {}
